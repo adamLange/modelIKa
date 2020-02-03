@@ -15,23 +15,23 @@ model Machine
     Placement(visible = true, transformation(origin = {70, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity)  annotation(
     Placement(visible = true, transformation(origin = {-66, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Forces.Spring tool_tip_spring(c = 100000)  annotation(
+  Modelica.Mechanics.MultiBody.Forces.Spring tool_tip_spring(c = 1000000)  annotation(
     Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Forces.Spring tool_shank_spring(c = 100000)  annotation(
+  Modelica.Mechanics.MultiBody.Forces.Spring tool_shank_spring(c = 1000000)  annotation(
     Placement(visible = true, transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.Rotational.Components.Damper b_damper(d = 1000)  annotation(
+  Modelica.Mechanics.Rotational.Components.Damper b_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {-70, -74}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Rotational.Components.Damper a_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.Translational.Components.Damper y_damper(d = 1000)  annotation(
+  Modelica.Mechanics.Translational.Components.Damper y_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {50, -72}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.Translational.Components.Damper x_damper(d = 1000)  annotation(
+  Modelica.Mechanics.Translational.Components.Damper x_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {70, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.Translational.Components.Damper z_damper(d = 1000)  annotation(
+  Modelica.Mechanics.Translational.Components.Damper z_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {70, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_shank_position(r = {0, 0, -0.010})  annotation(
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_shank_position(r = {0, 0, 0.50})  annotation(
     Placement(visible = true, transformation(origin = {110, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_tip_position(r = {0, 0, -0.050})  annotation(
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_tip_position(r = {0, 0, -0.500})  annotation(
     Placement(visible = true, transformation(origin = {150, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   IK.ToolTarget tool_target annotation(
     Placement(visible = true, transformation(origin = {-118, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
@@ -41,17 +41,17 @@ model Machine
     Placement(visible = true, transformation(origin = {-10, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Sensors.Distance distance_tool_shank annotation(
     Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  IK.ControlInterfaceUtilities.ControlInterface controlInterface1 annotation(
+  IK.ControlInterfaceUtilities.ControlInterface controlInterface1(tolerance_i = {0.0006, 0.0006},tool_tip_orientation_i = {0, 0, 0.50}, tool_tip_position_i = {0.001, 0, -1e-6})  annotation(
     Placement(visible = true, transformation(origin = {-156, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.Body spindle_body(m = 1, r_CM = {0, 0, 0})  annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body spindle_body(m = 0.1, r_CM = {0, 0, 0})  annotation(
     Placement(visible = true, transformation(origin = {140, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.Body body1(m = 1, r_CM = {0, 0, 0}) annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body body1(m = 0.1, r_CM = {0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {140, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.Body body2(m = 1, r_CM = {0, 0, 0}) annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body body2(m = 0.1, r_CM = {0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {140, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.Body body3(m = 1, r_CM = {0, 0, 0}) annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body body3(m = 0.1, r_CM = {0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {30, -110}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Mechanics.MultiBody.Parts.Body body4(m = 1, r_CM = {0, 0, 0}) annotation(
+  Modelica.Mechanics.MultiBody.Parts.Body body4(m = 0.1, r_CM = {0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {-50, -110}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
 equation
   connect(b_axis.frame_b, fixedTranslation1.frame_a) annotation(
