@@ -1,21 +1,28 @@
 #include "ModelicaUtilities.h"
 #include <stdlib.h>
 
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 typedef struct {
-  double tool_tip_position[3];
+  PyObject *pPostProcessor;
 } ControlInterface;
 
 
 void *ControlInterface_constructor(){
   ModelicaMessage("ControllerInterface initializing.\n");
   ControlInterface *obj = malloc(sizeof(ControlInterface));
-  obj->tool_tip_position[0] = -1e-6;
-  obj->tool_tip_position[1] = 0.0;
-  obj->tool_tip_position[2] = 0.0;
+  Py_Initialize();
+  PyObject *pModule = PyImport_ImportModule("ModelIKa");
+  obj->pPostProcessor = PyObject_CallMethod(pModule,"PostProcessor","s","spagetti");
+  Py_DECREF(pModule);
   return (void *)obj;
 }
 
 void ControlInterface_destructor(void *obj){
+  ControlInterface *ctlInt = (ControlInterface *)obj;
+  PyObject_CallMethod(ctlInt->pPostProcessor,"finalize","");
+  Py_FinalizeEx();
   //free(obj);
 }
 
@@ -29,21 +36,29 @@ void ControlInterface_update(void *obj,
    ModelicaMessage("ControlInterface_update\n");
    ControlInterface *ctlInt = (ControlInterface *)obj;
 
-   ctlInt->tool_tip_position[0] = ctlInt->tool_tip_position[0] + 0.001;
-   ctlInt->tool_tip_position[1] = ctlInt->tool_tip_position[1] + 0.001;
-   ctlInt->tool_tip_position[2] = ctlInt->tool_tip_position[2] + 0.001;
+   PyObject *pResult = PyObject_CallMethod(ctlInt->pPostProcessor,"IK_step","ddddd",
+     xyzab[0],
+     xyzab[1],
+     xyzab[2],
+     xyzab[3],
+     xyzab[4]
+   );
+   double tx,ty,tz,ox,oy,oz,tt,to;
+   int quit;
+   PyArg_ParseTuple(pResult,"ddddddddp",&tx,&ty,&tz,&ox,&oy,&oz,&tt,&to,&quit);
+   Py_DECREF(pResult);
 
-   tool_tip_position[0] = ctlInt->tool_tip_position[0];
-   tool_tip_position[1] = ctlInt->tool_tip_position[1];
-   tool_tip_position[2] = ctlInt->tool_tip_position[2];
+   tool_tip_position[0] = tx;
+   tool_tip_position[1] = ty;
+   tool_tip_position[2] = tz;
 
-   tool_orientation[0] = 0.000;
-   tool_orientation[1] = 0.000;
-   tool_orientation[2] = 0.50 + 1e-6;
+   tool_orientation[0] = ox;
+   tool_orientation[1] = oy;
+   tool_orientation[2] = oz;
 
-   tolerance[0] = 1e-6;
-   tolerance[1] = 1e-6;
+   tolerance[0] = tt;
+   tolerance[1] = to;
 
-   *shutdown = 0;
+   *shutdown = quit;
 
 }

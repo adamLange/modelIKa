@@ -23,7 +23,8 @@ package ControlInterfaceUtilities
     t_from_last_update = 0;
   equation
     der(t_from_last_update) = 1;
-    when {(error[1] <= pre(tolerance[1]) and error[2] <= pre(tolerance[2]) ), (t_from_last_update > 1e-5 and ((error[1] <= pre(tolerance[1]))and(error[2]<=pre(tolerance[2]))) )} then
+    //when {(error[1] <= pre(tolerance[1]) and error[2] <= pre(tolerance[2]) ), (t_from_last_update > 1e-1 and ((error[1] <= pre(tolerance[1]))and(error[2]<=pre(tolerance[2]))) )} then
+    when {(error[1] <= pre(tolerance[1]) and error[2] <= pre(tolerance[2]) )} then
       //tool_tip_position = pre(tool_tip_position) + {1e-4, 1e-4, 1e-4};
       (tool_tip_position, tool_orientation, tolerance, shutdown) = update(ctlObj,{0.0,1.0,2.0,3.0,4.0});
       reinit(t_from_last_update,0);
