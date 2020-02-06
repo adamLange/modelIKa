@@ -20,8 +20,8 @@ void *ControlInterface_constructor(){
 }
 
 void ControlInterface_destructor(void *obj){
-  ControlInterface *ctlInt = (ControlInterface *)obj;
-  PyObject_CallMethod(ctlInt->pPostProcessor,"finalize","");
+  //ControlInterface *ctlInt = (ControlInterface *)obj;
+  //PyObject_CallMethod(ctlInt->pPostProcessor,"finalize","");
   Py_FinalizeEx();
   //free(obj);
 }

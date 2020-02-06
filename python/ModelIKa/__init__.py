@@ -1,4 +1,5 @@
 from OCC.Core.gp import gp_Vec
+import pandas as pd
 
 class PostProcessor:
 
@@ -9,6 +10,9 @@ class PostProcessor:
     self.f = open("/tmp/bla","w")
     self.num_steps = 0
 
+    self.df = pd.read_csv("/home/adam/projects/modelIKa/python/toolpathGeneration/sphere_path.csv")
+    self.df_index = 0
+
   def finalize(self):
     self.f.close()
 
@@ -16,7 +20,13 @@ class PostProcessor:
     if self.num_steps <= 10:
       self.f.write("{},{},{},{},{}\n".format(x,y,z,a,b))
       self.f.write("burrito\n")
-    self.v_tool = self.v_tool + gp_Vec(-0.001,-0.001,-0.001)
+    
+    if (self.df_index + 1) <= len(self.df):
+      i,xi,yi,zi,ii,ji,ki = self.df.iloc[self.df_index]
+      self.v_tool = gp_Vec(xi,yi,zi)
+      self.v_orient = gp_Vec(ii,ji,ki) * (0.50+1e-8)
+      self.df_index += 1
+
     shutdownModelica = False
     self.num_steps += 1
     if self.num_steps > 10:
