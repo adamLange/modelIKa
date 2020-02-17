@@ -15,9 +15,9 @@ model Machine
     Placement(visible = true, transformation(origin = {70, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity)  annotation(
     Placement(visible = true, transformation(origin = {-66, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Forces.Spring tool_tip_spring(c = 1000000)  annotation(
+  Modelica.Mechanics.MultiBody.Forces.Spring tool_tip_spring(c = 1000000, s_small = 1e-15, s_unstretched = 1e-10)  annotation(
     Placement(visible = true, transformation(origin = {-10, 90}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Forces.Spring tool_shank_spring(c = 1000000)  annotation(
+  Modelica.Mechanics.MultiBody.Forces.Spring tool_shank_spring(c = 1000000, s_small = 1e-15, s_unstretched = 1e-10)  annotation(
     Placement(visible = true, transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Rotational.Components.Damper b_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {-70, -74}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -29,19 +29,19 @@ model Machine
     Placement(visible = true, transformation(origin = {70, 2}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Translational.Components.Damper z_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {70, 56}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_shank_position(r = {0, 0, 0.50})  annotation(
-    Placement(visible = true, transformation(origin = {110, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_tip_position(r = {0, 0, -0.500})  annotation(
-    Placement(visible = true, transformation(origin = {150, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_shank_position(r = {0, 0, 0.5})  annotation(
+    Placement(visible = true, transformation(origin = {130, 66}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.MultiBody.Parts.FixedTranslation tool_tip_position(r = {0, 0, 0})  annotation(
+    Placement(visible = true, transformation(origin = {130, 38}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   IK.ToolTarget tool_target annotation(
     Placement(visible = true, transformation(origin = {-118, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   IK.ToolTarget tool_shank_target annotation(
-    Placement(visible = true, transformation(origin = {-162, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
+    Placement(visible = true, transformation(origin = {-160, -50}, extent = {{10, -10}, {-10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Sensors.Distance distance_tool_tip annotation(
     Placement(visible = true, transformation(origin = {-10, 70}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Sensors.Distance distance_tool_shank annotation(
     Placement(visible = true, transformation(origin = {-10, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  IK.ControlInterfaceUtilities.ControlInterface controlInterface1(tolerance_i = {0.0006, 0.0006},tool_tip_orientation_i = {0, 0, 0.50}, tool_tip_position_i = {0.001, 0, -1e-6})  annotation(
+  IK.ControlInterfaceUtilities.ControlInterface controlInterface1(tolerance_i = {0.0006, 0.0006},tool_tip_orientation_i = {0, 0, 0.50}, tool_tip_position_i = {0, 0, -1e6})  annotation(
     Placement(visible = true, transformation(origin = {-156, -10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.Body spindle_body(m = 0.1, r_CM = {0, 0, 0})  annotation(
     Placement(visible = true, transformation(origin = {140, 8}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -53,6 +53,16 @@ model Machine
     Placement(visible = true, transformation(origin = {30, -110}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Mechanics.MultiBody.Parts.Body body4(m = 0.1, r_CM = {0, 0, 0}) annotation(
     Placement(visible = true, transformation(origin = {-50, -110}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  Modelica.Mechanics.Translational.Sensors.PositionSensor y_position_sensor annotation(
+    Placement(visible = true, transformation(origin = {62, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.Translational.Sensors.PositionSensor x_position_sensor annotation(
+    Placement(visible = true, transformation(origin = {104, -76}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.Translational.Sensors.PositionSensor z_position_sensor annotation(
+    Placement(visible = true, transformation(origin = {144, -96}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.Rotational.Sensors.AngleSensor b_angle_sensor annotation(
+    Placement(visible = true, transformation(origin = {-94, -104}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.Rotational.Sensors.AngleSensor a_angle_sensor annotation(
+    Placement(visible = true, transformation(origin = {-14, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(b_axis.frame_b, fixedTranslation1.frame_a) annotation(
     Line(points = {{-60, -50}, {-40, -50}, {-40, -50}, {-40, -50}}, color = {95, 95, 95}));
@@ -86,20 +96,12 @@ equation
     Line(points = {{60, 56}, {48, 56}, {48, 42}, {66, 42}, {66, 38}, {66, 38}}, color = {0, 127, 0}));
   connect(z_axis.axis, z_damper.flange_b) annotation(
     Line(points = {{78, 38}, {78, 38}, {78, 42}, {90, 42}, {90, 56}, {80, 56}, {80, 56}}, color = {0, 127, 0}));
-  connect(z_axis.frame_b, tool_shank_position.frame_a) annotation(
-    Line(points = {{80, 32}, {100, 32}, {100, 32}, {100, 32}}));
-  connect(tool_shank_position.frame_b, tool_tip_position.frame_a) annotation(
-    Line(points = {{120, 32}, {138, 32}, {138, 32}, {140, 32}}, color = {95, 95, 95}));
-  connect(tool_tip_spring.frame_b, tool_tip_position.frame_b) annotation(
-    Line(points = {{0, 90}, {24, 90}, {24, 78}, {160, 78}, {160, 32}}, color = {95, 95, 95}));
-  connect(tool_shank_spring.frame_b, tool_shank_position.frame_b) annotation(
-    Line(points = {{0, 30}, {34, 30}, {34, 68}, {130, 68}, {130, 50}, {130, 50}, {130, 32}, {120, 32}, {120, 32}}));
   connect(tool_target.frame_a, b_axis.frame_a) annotation(
     Line(points = {{-108, -56}, {-102, -56}, {-102, -50}, {-80, -50}, {-80, -50}}));
   connect(tool_shank_target.frame_a, tool_target.frame_b) annotation(
-    Line(points = {{-152, -56}, {-128, -56}, {-128, -56}, {-128, -56}}));
+    Line(points = {{-150, -56}, {-128, -56}}));
   connect(tool_shank_spring.frame_a, tool_shank_target.frame_b) annotation(
-    Line(points = {{-20, 30}, {-198, 30}, {-198, -56}, {-172, -56}, {-172, -56}}, color = {95, 95, 95}));
+    Line(points = {{-20, 30}, {-198, 30}, {-198, -56}, {-170, -56}}, color = {95, 95, 95}));
   connect(tool_target.frame_b, tool_tip_spring.frame_a) annotation(
     Line(points = {{-128, -56}, {-140, -56}, {-140, 90}, {-20, 90}}));
   connect(distance_tool_tip.frame_a, tool_tip_spring.frame_a) annotation(
@@ -113,7 +115,7 @@ equation
   connect(controlInterface1.tool_tip_position, tool_target.vector_in) annotation(
     Line(points = {{-146, -8}, {-98, -8}, {-98, -42}, {-98, -42}, {-98, -44}, {-108, -44}, {-108, -44}}, color = {0, 0, 127}, thickness = 0.5));
   connect(controlInterface1.tool_orientation, tool_shank_target.vector_in) annotation(
-    Line(points = {{-146, -12}, {-136, -12}, {-136, -44}, {-152, -44}, {-152, -44}}, color = {0, 0, 127}, thickness = 0.5));
+    Line(points = {{-146, -12}, {-136, -12}, {-136, -44}, {-150, -44}}, color = {0, 0, 127}, thickness = 0.5));
   connect(distance_tool_tip.distance, controlInterface1.error[1]) annotation(
     Line(points = {{-10, 60}, {-10, 60}, {-10, 50}, {-178, 50}, {-178, -10}, {-164, -10}, {-164, -10}}, color = {0, 0, 127}));
   connect(distance_tool_shank.distance, controlInterface1.error[2]) annotation(
@@ -128,6 +130,34 @@ equation
     Line(points = {{20, -50}, {26, -50}, {26, -82}, {30, -82}, {30, -100}, {30, -100}}));
   connect(b_axis.frame_b, body4.frame_a) annotation(
     Line(points = {{-60, -50}, {-50, -50}, {-50, -100}, {-50, -100}}, color = {95, 95, 95}));
+  connect(z_axis.frame_b, tool_tip_position.frame_a) annotation(
+    Line(points = {{80, 32}, {102, 32}, {102, 38}, {120, 38}, {120, 38}}));
+  connect(tool_tip_position.frame_b, tool_tip_spring.frame_b) annotation(
+    Line(points = {{140, 38}, {188, 38}, {188, 118}, {20, 118}, {20, 98}, {20, 98}, {20, 90}, {0, 90}, {0, 90}}, color = {95, 95, 95}));
+  connect(z_axis.frame_b, tool_shank_position.frame_a) annotation(
+    Line(points = {{80, 32}, {102, 32}, {102, 66}, {120, 66}, {120, 66}}));
+  connect(tool_shank_position.frame_b, tool_shank_spring.frame_b) annotation(
+    Line(points = {{140, 66}, {152, 66}, {152, 92}, {30, 92}, {30, 30}, {0, 30}, {0, 30}}));
+  connect(y_axis.axis, y_position_sensor.flange) annotation(
+    Line(points = {{58, -44}, {66, -44}, {66, -88}, {42, -88}, {42, -98}, {52, -98}, {52, -98}}, color = {0, 127, 0}));
+  connect(x_position_sensor.flange, x_axis.axis) annotation(
+    Line(points = {{94, -76}, {88, -76}, {88, -10}, {78, -10}, {78, -14}, {78, -14}}, color = {0, 127, 0}));
+  connect(z_axis.axis, z_position_sensor.flange) annotation(
+    Line(points = {{78, 38}, {78, 38}, {78, 42}, {96, 42}, {96, -64}, {124, -64}, {124, -96}, {134, -96}, {134, -96}}, color = {0, 127, 0}));
+  connect(b_damper.flange_b, b_angle_sensor.flange) annotation(
+    Line(points = {{-60, -74}, {-52, -74}, {-52, -88}, {-114, -88}, {-114, -104}, {-104, -104}, {-104, -104}}));
+  connect(a_axis.axis, a_angle_sensor.flange) annotation(
+    Line(points = {{10, -40}, {10, -40}, {10, -40}, {26, -40}, {26, -12}, {-12, -12}, {-12, -84}, {-32, -84}, {-32, -98}, {-24, -98}, {-24, -98}}));
+  connect(x_position_sensor.s, controlInterface1.machine_position[1]) annotation(
+    Line(points = {{116, -76}, {118, -76}, {118, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
+  connect(y_position_sensor.s, controlInterface1.machine_position[2]) annotation(
+    Line(points = {{74, -98}, {76, -98}, {76, -122}, {76, -122}, {76, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
+  connect(z_position_sensor.s, controlInterface1.machine_position[3]) annotation(
+    Line(points = {{156, -96}, {166, -96}, {166, -124}, {166, -124}, {166, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
+  connect(a_angle_sensor.phi, controlInterface1.machine_position[4]) annotation(
+    Line(points = {{-2, -98}, {6, -98}, {6, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
+  connect(b_angle_sensor.phi, controlInterface1.machine_position[5]) annotation(
+    Line(points = {{-82, -104}, {-74, -104}, {-74, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
   annotation(
     Diagram(coordinateSystem(extent = {{-200, -200}, {200, 200}})),
     Icon(coordinateSystem(extent = {{-200, -200}, {200, 200}})));end Machine;

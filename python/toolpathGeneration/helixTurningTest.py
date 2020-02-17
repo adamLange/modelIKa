@@ -16,7 +16,10 @@ face = OCCUtils.Topo(shape).faces().__next__()
 iksolver = IKClient("127.0.0.1",8823)
 
 ttg = TurningToolpathGenerator(face,iksolver)
-ttg.v_initial_extension = 1.3
-ttg.cutting_angle = 90
+ttg.pitch = 0.7
+ttg.v_initial_extension = 0 
+ttg.cutting_angle = 10
+ttg.create_target_vis_edges = True
 ttg.makeHelixOnCyl()
 ttg.generate_tool_targets()
+ttg.write_target_edges("./target_edges.brep")

@@ -6,6 +6,9 @@ from OCC.Core.GCE2d import GCE2d_MakeSegment
 from OCC.Core.BRepBuilderAPI import BRepBuilderAPI_MakeEdge
 from OCC.Core.Geom import Geom_CylindricalSurface
 from OCC.Core.BRepAdaptor import BRepAdaptor_Curve
+from OCC.Core.TopoDS import TopoDS_Compound
+from OCC.Core.BRep import BRep_Builder
+from OCC.Core.BRepTools import breptools_Write
 
 class TurningToolpathGenerator:
 
@@ -19,6 +22,12 @@ class TurningToolpathGenerator:
     self.cutting_angle = 10 #deg
 
     self.ikSolver = ikSolver
+
+    self.create_target_vis_edges = False
+    self.target_edges = []
+
+    self.feedrate = 100.0 # mm / min
+    self.v_previous_contact_point = None
 
   def makeHelixOnCyl(self):
     bas = BRepAdaptor_Surface(self.face)
@@ -44,7 +53,7 @@ class TurningToolpathGenerator:
     ba = BRepAdaptor_Curve(self.helix_edge)
     u_min = ba.FirstParameter()
     u_max = ba.LastParameter()
-    u_step = 1
+    u_step = 0.1
     u_now = u_min
     while u_now <= u_max:
       v_contact = gp_Vec(ba.Value(u_now).XYZ())
@@ -58,6 +67,10 @@ class TurningToolpathGenerator:
       v_tool_tip = v_contact+v_contact_to_ball_center+v_ball_center_to_tool_tip
       v_tool_orientation = - v_ball_center_to_tool_tip.Normalized() * (0.500+1e-8)
 
+      if self.create_target_vis_edges:
+        me = BRepBuilderAPI_MakeEdge(gp_Pnt(v_tool_tip.XYZ()),gp_Pnt((v_tool_tip+v_tool_orientation).XYZ()))
+        self.target_edges.append(me.Edge())
+
       I = v_tool_tip.X() / 1000
       J = v_tool_tip.Y() / 1000
       K = v_tool_tip.Z() / 1000
@@ -66,7 +79,8 @@ class TurningToolpathGenerator:
       V = v_tool_orientation.Y()
       W = v_tool_orientation.Z()
 
-      x,y,z,a,b = self.ikSolver.solve((I,J,K,U,V,W),False)
+      x,y,z,a,b = self.ikSolver.solve((I,J,K,U,V,W),1e-6,False)
+      print(x,y,z,a,b)
 
       if u_now == u_max:
         break
@@ -74,3 +88,12 @@ class TurningToolpathGenerator:
       if u_next > u_max:
         u_next = u_max
       u_now = u_next
+
+  def write_target_edges(self,filename):
+    comp = TopoDS_Compound()
+    builder = BRep_Builder()
+    builder.MakeCompound(comp)
+    for shape in self.target_edges:
+      builder.Add(comp, shape)
+    breptools_Write(comp,filename)
+

@@ -11,10 +11,11 @@ class IKClient:
   def __del__(self):
     self.socket.close()
 
-  def solve(self,pose,shutdown=False):
+  def solve(self,pose,tollerance=1e-6,shutdown=False):
     d = {"q":shutdown,
-         "pose":pose}
+         "pose":pose,
+         "tol":tollerance}
     self.socket.sendall(json.dumps(d).encode())
     data = self.socket.recv(1024)
-    print(json.loads(data.decode()))
-    return (1,2,3,4,5)
+    d = json.loads(data.decode())
+    return d["solution"]

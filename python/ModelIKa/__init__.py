@@ -2,6 +2,7 @@ from OCC.Core.gp import gp_Vec
 import pandas as pd
 import socket
 import json
+from math import degrees
 
 from ModelIKa.IKClient import IKClient
 
@@ -47,7 +48,7 @@ class PostProcessor:
 
     d = json.loads(data_in.decode())
     print(d)
-    data_out = {"green":"red"}
+    data_out = {"solution":(x,y,z,degrees(a),degrees(b))}
     self.conn.sendall(json.dumps(data_out).encode())
     
     """
@@ -63,9 +64,10 @@ class PostProcessor:
     """
 
     #self.num_steps += 1
+    tol = d["tol"]
     shutdownModelica = d["q"]
     if d["q"]:
       self.finalize()
     pose = d["pose"]
     return (*pose,
-            2e-6,2e-6,shutdownModelica)
+            tol,tol,shutdownModelica)
