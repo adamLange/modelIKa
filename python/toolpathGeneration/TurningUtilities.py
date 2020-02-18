@@ -29,17 +29,21 @@ class TurningToolpathGenerator:
     self.feedrate = 100.0 # mm / min
     self.v_previous_contact_point = None
 
+    self.gcode = "(add tool offset moves from home ect...)\n"
+
+    self.gcode += "G21 G90 G93\n"
+
   def makeHelixOnCyl(self):
     bas = BRepAdaptor_Surface(self.face)
     cyl = bas.Cylinder()
+
+    delta_v = bas.LastVParameter() - bas.FirstVParameter()
     v_final = bas.LastVParameter()
 
     dv_du = self.pitch / (2*pi)
-    l = v_final / sin(atan(dv_du))
-    l += self.v_initial_extension / sin(atan(dv_du))
-    l += self.v_final_extension / sin(atan(dv_du))
+    l = delta_v / sin(atan(dv_du))
 
-    aLine2d = gp_Lin2d(gp_Pnt2d(0.0, -self.v_initial_extension), gp_Dir2d(1,dv_du))
+    aLine2d = gp_Lin2d(gp_Pnt2d(0.0,bas.FirstVParameter()), gp_Dir2d(1,dv_du))
     aSegment = GCE2d_MakeSegment(aLine2d, 0.0, l)
 
     helix_edge = BRepBuilderAPI_MakeEdge(aSegment.Value(), Geom_CylindricalSurface(cyl)).Edge()
@@ -79,7 +83,17 @@ class TurningToolpathGenerator:
       V = v_tool_orientation.Y()
       W = v_tool_orientation.Z()
 
+
       x,y,z,a,b = self.ikSolver.solve((I,J,K,U,V,W),1e-6,False)
+
+      if self.v_previous_contact_point:
+        cut_distance = (v_contact - self.v_previous_contact_point).Magnitude()
+        f = self.feedrate / cut_distance
+      else:
+        f = 0
+      self.v_previous_contact_point = v_contact
+
+      self.gcode += "G01 X{:.6f} Y{:.6f} Z{:.6f} A{:.6f} B{:.6f} F{:.6f}\n".format(x,y,z,a,b,f)
       print(x,y,z,a,b)
 
       if u_now == u_max:
@@ -96,4 +110,11 @@ class TurningToolpathGenerator:
     for shape in self.target_edges:
       builder.Add(comp, shape)
     breptools_Write(comp,filename)
+
+  def write_gcode(self,filename):
+    self.gcode += "(add spindle stuff and return to home)\n"
+    self.gcode += "M2"
+    f = open(filename,"w")
+    f.write(self.gcode)
+    f.close()
 

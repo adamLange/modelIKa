@@ -12,11 +12,12 @@ class PostProcessor:
     #self.infile = infile
     self.v_tool = gp_Vec()
     self.v_orient = gp_Vec(0,0,0.500+1e-8)
+
     #self.f = open("/tmp/bla","w")
     #self.num_steps = 0
 
-    self.df = pd.read_csv("/home/adam/projects/modelIKa/python/toolpathGeneration/sphere_path.csv")
-    self.df_index = 0
+    #self.df = pd.read_csv("/home/adam/projects/modelIKa/python/toolpathGeneration/sphere_path.csv")
+    #self.df_index = 0
 
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     HOST = "127.0.0.1"
@@ -25,6 +26,9 @@ class PostProcessor:
     self.sock.listen()
     self.conn = None
 
+    self.request = self.getRequest() # burn one request for initialization
+    self.primed = False
+
   def finalize(self):
     if self.conn:
       self.conn.close()
@@ -32,7 +36,7 @@ class PostProcessor:
     self.sock.close()
     self.f.close()
 
-  def IK_step(self,x,y,z,a,b):
+  def getRequest(self):
 
     data_in = ""
     while len(data_in) == 0:
@@ -47,27 +51,21 @@ class PostProcessor:
         self.conn = None
 
     d = json.loads(data_in.decode())
-    print(d)
-    data_out = {"solution":(x,y,z,degrees(a),degrees(b))}
-    self.conn.sendall(json.dumps(data_out).encode())
-    
-    """
-    if self.num_steps <= 10:
-      self.f.write("{},{},{},{},{}\n".format(x,y,z,a,b))
-      self.f.write("burrito\n")
-    
-    if (self.df_index + 1) <= len(self.df):
-      i,xi,yi,zi,ii,ji,ki = self.df.iloc[self.df_index]
-      self.v_tool = gp_Vec(xi,yi,zi)
-      self.v_orient = gp_Vec(ii,ji,ki) * (0.50+1e-8)
-      self.df_index += 1
-    """
+    return d
 
-    #self.num_steps += 1
-    tol = d["tol"]
-    shutdownModelica = d["q"]
-    if d["q"]:
+  def IK_step(self,x,y,z,a,b):
+
+    if self.primed:
+      data_out = {"solution":(x/1e3,y*1e3,z*1e3,degrees(a),degrees(b))}
+      self.conn.sendall(json.dumps(data_out).encode())
+      self.request = self.getRequest()
+    else:
+      self.primed = True
+    
+    tol = self.request["tol"]
+    shutdownModelica = self.request["q"]
+    if self.request["q"]:
       self.finalize()
-    pose = d["pose"]
-    return (*pose,
-            tol,tol,shutdownModelica)
+    pose = self.request["pose"]
+
+    return (*pose,tol,tol,shutdownModelica)
