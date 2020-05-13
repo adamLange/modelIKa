@@ -26,12 +26,14 @@ class TurningToolpathGenerator:
     self.create_target_vis_edges = False
     self.target_edges = []
 
-    self.feedrate = 100.0 # mm / min
+    self.feedrate = 400.0 # mm / min
     self.v_previous_contact_point = None
 
     self.gcode = "(add tool offset moves from home ect...)\n"
-
+    self.gcode += "G43 H2\n"
     self.gcode += "G21 G90 G93\n"
+    self.gcode += "G0 Z50\n"
+    self.gcode += "M3 S21390\n"
 
   def makeHelixOnCyl(self):
     bas = BRepAdaptor_Surface(self.face)
@@ -89,11 +91,12 @@ class TurningToolpathGenerator:
       if self.v_previous_contact_point:
         cut_distance = (v_contact - self.v_previous_contact_point).Magnitude()
         f = self.feedrate / cut_distance
+        self.gcode += "G01 X{:.6f} Y{:.6f} Z{:.6f} A{:.6f} B{:.6f} F{:.6f}\n".format(x,y,z,a,b,f)
       else:
         f = 0
+        self.gcode += "G0 X{:.6f} Y{:.6f} Z{:.6f} A{:.6f} B{:.6f}\n".format(x,y,z,a,b)
       self.v_previous_contact_point = v_contact
 
-      self.gcode += "G01 X{:.6f} Y{:.6f} Z{:.6f} A{:.6f} B{:.6f} F{:.6f}\n".format(x,y,z,a,b,f)
       print(x,y,z,a,b)
 
       if u_now == u_max:
@@ -113,6 +116,8 @@ class TurningToolpathGenerator:
 
   def write_gcode(self,filename):
     self.gcode += "(add spindle stuff and return to home)\n"
+    self.gcode += "G0 Z50\n"
+    self.gcode += "M5\n"
     self.gcode += "M2"
     f = open(filename,"w")
     f.write(self.gcode)

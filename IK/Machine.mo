@@ -1,17 +1,17 @@
 within IK;
 
 model Machine
-  Modelica.Mechanics.MultiBody.Joints.Revolute b_axis(a(fixed = false), n = {0, 0, -1}, phi(fixed = true), useAxisFlange = true, w(fixed = false, start = 0))  annotation(
+  Modelica.Mechanics.MultiBody.Joints.Revolute b_axis(a(fixed = false), n = {0, 0, -1}, phi(fixed = true, start = 0), useAxisFlange = true, w(fixed = false, start = 0))  annotation(
     Placement(visible = true, transformation(origin = {-70, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1 annotation(
     Placement(visible = true, transformation(origin = {-30, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Joints.Revolute a_axis(a(fixed = false), n = {1, 0, 0}, phi(fixed = true, start = 0.0872665), useAxisFlange = true, w(fixed = false, start = 0))  annotation(
+  Modelica.Mechanics.MultiBody.Joints.Revolute a_axis(a(fixed = false), n = {1, 0, 0}, phi(fixed = true, start = 0), useAxisFlange = true, w(fixed = false, start = 0))  annotation(
     Placement(visible = true, transformation(origin = {10, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Joints.Prismatic y_axis(n = {0, -1, 0}, s(fixed = true), useAxisFlange = true, v(fixed = false))  annotation(
     Placement(visible = true, transformation(origin = {50, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Joints.Prismatic x_axis(n = {-1, 0, 0},s(fixed = true), useAxisFlange = true, v(fixed = false))  annotation(
     Placement(visible = true, transformation(origin = {70, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.MultiBody.Joints.Prismatic z_axis(n = {0, 0, 1}, s(fixed = true), useAxisFlange = true, v(fixed = false))  annotation(
+  Modelica.Mechanics.MultiBody.Joints.Prismatic z_axis(n = {0, 0, 1}, s(fixed = true, start = 0), useAxisFlange = true, v(fixed = false))  annotation(
     Placement(visible = true, transformation(origin = {70, 32}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   inner Modelica.Mechanics.MultiBody.World world(gravityType = Modelica.Mechanics.MultiBody.Types.GravityTypes.NoGravity)  annotation(
     Placement(visible = true, transformation(origin = {-66, -4}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -21,7 +21,7 @@ model Machine
     Placement(visible = true, transformation(origin = {-10, 30}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Rotational.Components.Damper b_damper(d = 10)  annotation(
     Placement(visible = true, transformation(origin = {-70, -74}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Modelica.Mechanics.Rotational.Components.Damper a_damper(d = 10)  annotation(
+  Modelica.Mechanics.Rotational.Components.Damper a_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Translational.Components.Damper y_damper(d = 100)  annotation(
     Placement(visible = true, transformation(origin = {50, -72}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
