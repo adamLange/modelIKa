@@ -1,7 +1,7 @@
 within IK;
 
 model Machine
-  Modelica.Mechanics.MultiBody.Joints.Revolute b_axis(a(fixed = false), n = {0, 0, -1}, phi(fixed = true, start = 0), useAxisFlange = true, w(fixed = false, start = 0))  annotation(
+  Modelica.Mechanics.MultiBody.Joints.Revolute b_axis(a(fixed = false), n = {0, 0, -1}, phi(fixed = true, start = 0.174533), useAxisFlange = true, w(fixed = false, start = 0))  annotation(
     Placement(visible = true, transformation(origin = {-70, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.MultiBody.Parts.FixedTranslation fixedTranslation1 annotation(
     Placement(visible = true, transformation(origin = {-30, -50}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
@@ -63,6 +63,14 @@ model Machine
     Placement(visible = true, transformation(origin = {-94, -104}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Rotational.Sensors.AngleSensor a_angle_sensor annotation(
     Placement(visible = true, transformation(origin = {-14, -98}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  IK.Limiter limiter1(k = 10, lower_limit = -115 * Modelica.Constants.pi / 180, upper_limit = 45 * Modelica.Constants.pi / 180)  annotation(
+    Placement(visible = true, transformation(origin = {-10, -156}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.Rotational.Sources.Torque torque1 annotation(
+    Placement(visible = true, transformation(origin = {38, -158}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Limiter b_limiter(k = 10, lower_limit = 0, upper_limit = 360 * Modelica.Constants.pi / 180)  annotation(
+    Placement(visible = true, transformation(origin = {-128, -154}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
+  Modelica.Mechanics.Rotational.Sources.Torque torque_b_limiter annotation(
+    Placement(visible = true, transformation(origin = {-84, -158}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 equation
   connect(b_axis.frame_b, fixedTranslation1.frame_a) annotation(
     Line(points = {{-60, -50}, {-40, -50}, {-40, -50}, {-40, -50}}, color = {95, 95, 95}));
@@ -158,6 +166,22 @@ equation
     Line(points = {{-2, -98}, {6, -98}, {6, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
   connect(b_angle_sensor.phi, controlInterface1.machine_position[5]) annotation(
     Line(points = {{-82, -104}, {-74, -104}, {-74, -130}, {-194, -130}, {-194, -16}, {-164, -16}, {-164, -16}}, color = {0, 0, 127}));
+  connect(a_angle_sensor.phi, limiter1.u) annotation(
+    Line(points = {{-2, -98}, {6, -98}, {6, -140}, {-36, -140}, {-36, -156}, {-20, -156}, {-20, -156}}, color = {0, 0, 127}));
+  connect(limiter1.y, torque1.tau) annotation(
+    Line(points = {{0, -156}, {12, -156}, {12, -158}, {26, -158}, {26, -158}}, color = {0, 0, 127}));
+  connect(torque1.support, a_axis.support) annotation(
+    Line(points = {{38, -168}, {38, -168}, {38, -176}, {58, -176}, {58, -146}, {10, -146}, {10, -82}, {-6, -82}, {-6, -40}, {4, -40}, {4, -40}}));
+  connect(torque1.flange, a_axis.axis) annotation(
+    Line(points = {{48, -158}, {62, -158}, {62, -142}, {14, -142}, {14, -62}, {22, -62}, {22, -40}, {10, -40}, {10, -40}}));
+  connect(b_limiter.y, torque_b_limiter.tau) annotation(
+    Line(points = {{-118, -154}, {-108, -154}, {-108, -158}, {-96, -158}, {-96, -158}}, color = {0, 0, 127}));
+  connect(b_angle_sensor.phi, b_limiter.u) annotation(
+    Line(points = {{-82, -104}, {-74, -104}, {-74, -118}, {-152, -118}, {-152, -154}, {-138, -154}, {-138, -154}}, color = {0, 0, 127}));
+  connect(torque_b_limiter.flange, b_angle_sensor.flange) annotation(
+    Line(points = {{-74, -158}, {-68, -158}, {-68, -138}, {-126, -138}, {-126, -104}, {-104, -104}, {-104, -104}}));
+  connect(torque_b_limiter.support, b_axis.support) annotation(
+    Line(points = {{-84, -168}, {-64, -168}, {-64, -134}, {-130, -134}, {-130, -82}, {-92, -82}, {-92, -36}, {-76, -36}, {-76, -40}, {-76, -40}}));
   annotation(
     Diagram(coordinateSystem(extent = {{-200, -200}, {200, 200}})),
     Icon(coordinateSystem(extent = {{-200, -200}, {200, 200}})));end Machine;

@@ -15,7 +15,7 @@ def compute_cylinder(i):
 
     face = OCCUtils.Topo(shape).faces().__next__()
 
-    iksolver = IKClient("127.0.0.1",8823)
+    iksolver = IKClient("127.0.0.1",8826)
 
     ttg = TurningToolpathGenerator(face,iksolver)
     #ttg.pitch = 1.0

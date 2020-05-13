@@ -21,7 +21,7 @@ class PostProcessor:
 
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     HOST = "127.0.0.1"
-    PORT = 8823
+    PORT = 8826
     self.sock.bind((HOST,PORT))
     self.sock.listen()
     self.conn = None
