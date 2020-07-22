@@ -21,6 +21,10 @@ class TurningToolpathGenerator:
 
     self.cutting_angle = 10 #deg
 
+    self.inside = True # True -> cut inside
+                       # False -> cut outside
+    self.reverse_helix = False
+
     self.ikSolver = ikSolver
 
     self.create_target_vis_edges = False
@@ -28,6 +32,8 @@ class TurningToolpathGenerator:
 
     self.feedrate = 400.0 # mm / min
     self.v_previous_contact_point = None
+
+    self.output_offset = [0,0,0,0,0]  # added to result of the inverse kinematic solution
 
     self.gcode = "(add tool offset moves from home ect...)\n"
     self.gcode += "G43 H2\n"
@@ -45,8 +51,11 @@ class TurningToolpathGenerator:
     dv_du = self.pitch / (2*pi)
     l = delta_v / sin(atan(dv_du))
 
-    aLine2d = gp_Lin2d(gp_Pnt2d(0.0,bas.FirstVParameter()), gp_Dir2d(1,dv_du))
-    aSegment = GCE2d_MakeSegment(aLine2d, 0.0, l)
+    aLine2d = gp_Lin2d(gp_Pnt2d(bas.FirstUParameter(),bas.FirstVParameter()), gp_Dir2d(1,dv_du))
+    if not self.reverse_helix:
+      aSegment = GCE2d_MakeSegment(aLine2d, 0.0, l)
+    else:
+      aSegment = GCE2d_MakeSegment(aLine2d, l, 0.0)
 
     helix_edge = BRepBuilderAPI_MakeEdge(aSegment.Value(), Geom_CylindricalSurface(cyl)).Edge()
 
@@ -63,7 +72,10 @@ class TurningToolpathGenerator:
     u_now = u_min
     while u_now <= u_max:
       v_contact = gp_Vec(ba.Value(u_now).XYZ())
-      v_contact_to_ball_center =  -gp_Vec(v_contact.X(),v_contact.Y(),0).Normalized()*self.ball_radius
+      if self.inside: # cut inside
+        v_contact_to_ball_center = -gp_Vec(v_contact.X(),v_contact.Y(),0).Normalized()*self.ball_radius
+      else: # cut outside
+        v_contact_to_ball_center =  gp_Vec(v_contact.X(),v_contact.Y(),0).Normalized()*self.ball_radius
       trsf = gp_Trsf()
       trsf.SetRotation(gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,0,1)),pi/2)
       v_rotation_axis = v_contact_to_ball_center.Transformed(trsf)
@@ -87,6 +99,12 @@ class TurningToolpathGenerator:
 
 
       x,y,z,a,b = self.ikSolver.solve((I,J,K,U,V,W),1e-6,False)
+
+      x += self.output_offset[0]
+      y += self.output_offset[1]
+      z += self.output_offset[2]
+      a += self.output_offset[3]
+      b += self.output_offset[4]
 
       if self.v_previous_contact_point:
         cut_distance = (v_contact - self.v_previous_contact_point).Magnitude()

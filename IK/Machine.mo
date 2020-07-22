@@ -67,7 +67,7 @@ model Machine
     Placement(visible = true, transformation(origin = {-10, -156}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Rotational.Sources.Torque torque1 annotation(
     Placement(visible = true, transformation(origin = {38, -158}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
-  Limiter b_limiter(k = 10, lower_limit = 0, upper_limit = 360 * Modelica.Constants.pi / 180)  annotation(
+  Limiter b_limiter(k = 0, lower_limit = 0, upper_limit = 360 * Modelica.Constants.pi / 180)  annotation(
     Placement(visible = true, transformation(origin = {-128, -154}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
   Modelica.Mechanics.Rotational.Sources.Torque torque_b_limiter annotation(
     Placement(visible = true, transformation(origin = {-84, -158}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
