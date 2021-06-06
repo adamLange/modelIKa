@@ -22,6 +22,7 @@ class PostProcessor:
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     HOST = "127.0.0.1"
     PORT = 8826
+    self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     self.sock.bind((HOST,PORT))
     self.sock.listen()
     self.conn = None
@@ -56,7 +57,7 @@ class PostProcessor:
   def IK_step(self,x,y,z,a,b):
 
     if self.primed:
-      data_out = {"solution":(x/1e3,y*1e3,z*1e3,degrees(a),degrees(b))}
+      data_out = {"solution":(x,y,z,degrees(a),degrees(b))}
       self.conn.sendall(json.dumps(data_out).encode())
       self.request = self.getRequest()
     else:
