@@ -3,7 +3,7 @@ import json
 import time
 
 HOST = "127.0.0.1"
-PORT = 8822
+PORT = 8826
 
 with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
   s.connect((HOST,PORT))
